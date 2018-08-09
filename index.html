@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>省市区三级联动选择框</title>
+	<script type="text/javascript" src="jquery-1.11.3.js"></script>
+	<style>
+	    select{font-size: 15px;padding: 5px 5px}
+    </style>
+</head>
+<body>
+	<div>
+		<select id="province">
+			<option value="" hidden>请选择省份</option>
+		</select>
+		<select id="city">
+			<option value="" hidden>请选择城市</option>
+		</select>
+		<select id="district">
+			<option value="" hidden>请选择区县</option>
+		</select>
+		<button>提交</button>
+	</div>
+</body>
+<script type="text/javascript" src="data.js"></script>
+<script type="text/javascript">
+	var province = $("#province");
+	var city = $("#city");
+	var district = $("#district");
+	//初始化省份下拉选择框选项
+	$(function(){
+		//遍历对象,data为data.js中的对象
+		data.forEach(function(value,index){
+			var provinceName = value.name;//省份名
+			province.append("<option value='"+index+"'>"+provinceName+"</option>");
+		});
+	});
+	//省份下拉框切换事件,加载城市下拉框值
+	province.change(function(){
+		//先清除城市区县两个下拉框的选项
+		$("#city option:not(:first)").remove();
+		$("#district option:not(:first)").remove();
+		var cityList = data[province.val()].city;
+		cityList.forEach(function(value,index){
+			var cityName = value.name;//城市名
+			city.append("<option value='"+index+"'>"+cityName+"</option>");
+		});
+	});
+	//城市下拉框切换事件,加载区县下拉框值
+	city.change(function(){
+		$("#district option:not(:first)").remove();
+		var cityList = data[province.val()].city;
+		var districtList = cityList[city.val()].area;
+		districtList.forEach(function(value,index){
+			district.append("<option value='"+index+"'>"+value+"</option>");
+		});
+	});
+
+	$("button").click(function(){
+		var provinceVal = province.val();
+		var cityVal = city.val();
+		var districtVal = district.val();
+		if(provinceVal==''){alert("请选择省份");return false;}
+		if(cityVal==''){alert("请选择城市");return false;}
+		if(districtVal==''){alert("请选择区县");return false;}
+		//获取省市区选中的值的文本
+		var pName = $("#province option:selected").text();
+		var cName = $("#city option:selected").text();
+		var dName = $("#district option:selected").text();
+		alert("您选择的是:"+pName+cName+dName);
+	});
+</script>
+</html>
